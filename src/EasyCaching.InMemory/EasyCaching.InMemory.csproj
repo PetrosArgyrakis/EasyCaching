@@ -6,7 +6,7 @@
     <Owners>ncc;Catcher Wong</Owners>
     <Authors>ncc;Catcher Wong</Authors>
     <VersionPrefix>$(EasyCachingInMemoryPackageVersion)</VersionPrefix>
-    <VersionSuffix></VersionSuffix>
+    <VersionSuffix>alpha-1</VersionSuffix>
     <Description>
       A simple in-memory caching provider.
     </Description>
@@ -16,6 +16,7 @@
     <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
     <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
     <PackageIcon>nuget-icon.png</PackageIcon>
+    <PackageId>Kaizen.EasyCaching.InMemory</PackageId>
     <PackageReleaseNotes>
       $(EasyCachingInMemoryPackageNotes)
     </PackageReleaseNotes>

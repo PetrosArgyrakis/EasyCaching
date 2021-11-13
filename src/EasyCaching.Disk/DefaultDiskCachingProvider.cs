@@ -254,6 +254,11 @@
             }
         }
 
+        public override CacheValue<T> BaseGet<T>(string cacheKey, Func<T> dataRetriever, Func<T, (bool, TimeSpan)> func)
+        {
+            throw new NotImplementedException();
+        }
+
         public override CacheValue<T> BaseGet<T>(string cacheKey)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));

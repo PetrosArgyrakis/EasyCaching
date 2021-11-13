@@ -6,16 +6,17 @@
     <Owners>ncc;Catcher Wong</Owners>
     <Authors>ncc;Catcher Wong</Authors>
     <VersionPrefix>$(EasyCachingCorePackageVersion)</VersionPrefix>
-    <VersionSuffix></VersionSuffix>
+    <VersionSuffix>alpha-1</VersionSuffix>
     <Description>
       EasyCaching is a open source caching library that contains basic usages and some advanced usages of caching which can help us to handle caching more easier!
     </Description>
     <PackageTags>Caching,Cache,Distributed,Memory,Interceptor,Hybrid,ResponseCaching</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
-    <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
+    <RepositoryUrl>https://github.com/PetrosArgyrakis/EasyCaching</RepositoryUrl>
+    <ProjectUrl>https://github.com/PetrosArgyrakis/EasyCaching</ProjectUrl>
     <PackageIcon>nuget-icon.png</PackageIcon>
+    <PackageId>Kaizen.EasyCaching.Core</PackageId>
     <PackageReleaseNotes>
       $(EasyCachingCorePackageNotes)
     </PackageReleaseNotes>

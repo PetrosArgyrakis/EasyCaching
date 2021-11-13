@@ -135,6 +135,16 @@ namespace EasyCaching.Core
         CacheValue<T> Get<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration);
 
         /// <summary>
+        /// Get the specified cacheKey, dataRetriever and the delegate that determines the conditional expiration of the cache.
+        /// </summary>
+        /// <returns>The get.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <param name="dataRetriever">Data retriever.</param>
+        /// <param name="conditionalExpiration"></param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        CacheValue<T> Get<T>(string cacheKey, Func<T> dataRetriever, Func<T, (bool, TimeSpan)> conditionalExpiration);
+        
+        /// <summary>
         /// Gets the specified cacheKey, dataRetriever and expiration async.
         /// </summary>
         /// <returns>The async.</returns>

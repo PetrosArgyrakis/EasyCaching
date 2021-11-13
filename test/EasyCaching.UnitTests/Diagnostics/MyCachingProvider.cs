@@ -41,6 +41,11 @@
             return CacheValue<T>.NoValue;
         }
 
+        public override CacheValue<T> BaseGet<T>(string cacheKey, Func<T> dataRetriever, Func<T, (bool, TimeSpan)> conditionalExpiration)
+        {
+            return CacheValue<T>.NoValue;
+        }
+
         public override CacheValue<T> BaseGet<T>(string cacheKey)
         {
             return CacheValue<T>.NoValue;

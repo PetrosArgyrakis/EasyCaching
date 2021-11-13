@@ -164,6 +164,69 @@
             }
         }
 
+        public override CacheValue<T> BaseGet<T>(string cacheKey, Func<T> dataRetriever, Func<T, (bool, TimeSpan)> conditionalExpiration)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            ////mutex key
+            //Lock(cacheKey);
+
+            var result = _cache.Get<T>(cacheKey);
+            if (result.HasValue)
+            {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+
+                CacheStats.OnHit();
+
+                return result;
+            }
+
+            CacheStats.OnMiss();
+
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
+            if (!_cache.Add($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs)))
+            {
+                System.Threading.Thread.Sleep(_options.SleepMs);
+                return Get(cacheKey, dataRetriever, conditionalExpiration);
+            }
+
+            try
+            {
+                var res = dataRetriever();
+
+                if (res != null || _options.CacheNulls)
+                {
+                    var (doCache, expiration) = conditionalExpiration(res);
+                    if (doCache)
+                    {
+                        ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+                        Set(cacheKey, res, expiration);
+                    }
+                    
+                    //remove mutex key
+                    _cache.Remove($"{cacheKey}_Lock");
+
+                    return new CacheValue<T>(res, true);
+                }
+                else
+                {
+                    //remove mutex key
+                    _cache.Remove($"{cacheKey}_Lock");
+                    return CacheValue<T>.NoValue;
+                }
+            }
+            catch
+            {
+                //remove mutex key
+                _cache.Remove($"{cacheKey}_Lock");
+                throw;
+            }
+        }
+
+
         /// <summary>
         /// Get the specified cacheKey.
         /// </summary>

@@ -47,6 +47,7 @@ namespace EasyCaching.Core
         public abstract void BaseFlush();
         public abstract Task BaseFlushAsync();
         public abstract CacheValue<T> BaseGet<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration);
+        public abstract CacheValue<T> BaseGet<T>(string cacheKey, Func<T> dataRetriever, Func<T, (bool, TimeSpan)> conditionalExpiration);
         public abstract CacheValue<T> BaseGet<T>(string cacheKey);
         public abstract IDictionary<string, CacheValue<T>> BaseGetAll<T>(IEnumerable<string> cacheKeys);
         public abstract Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(IEnumerable<string> cacheKeys);
@@ -228,6 +229,59 @@ namespace EasyCaching.Core
             }
         }
 
+        public CacheValue<T> Get<T>(string cacheKey, Func<T> dataRetriever, Func<T, (bool, TimeSpan)> conditionalExpiration)
+        {
+            var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(Get), new[] { cacheKey }));
+            Exception e = null;
+            try
+            {
+                if (_lockFactory == null) return BaseGet<T>(cacheKey, dataRetriever, conditionalExpiration);
+
+                var value = BaseGet<T>(cacheKey);
+                if (value.HasValue) return value;
+
+                using (var @lock = _lockFactory.CreateLock(Name, $"{cacheKey}_Lock"))
+                {
+                    if (!@lock.Lock(_options.SleepMs)) throw new TimeoutException();
+
+                    value = BaseGet<T>(cacheKey);
+                    if (value.HasValue) return value;
+
+                    var item = dataRetriever();
+                    if (item != null || _options.CacheNulls)
+                    {
+                        var (doCache, expiration) = conditionalExpiration(item);
+                        if (doCache)
+                        {
+                            BaseSet(cacheKey, item, expiration);
+                        }
+
+                        return new CacheValue<T>(item, true);
+                    }
+                    else
+                    {
+                        return CacheValue<T>.NoValue;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                e = ex;
+                throw;
+            }
+            finally
+            {
+                if (e != null)
+                {
+                    s_diagnosticListener.WriteGetCacheError(operationId, e);
+                }
+                else
+                {
+                    s_diagnosticListener.WriteGetCacheAfter(operationId);
+                }
+            }
+        }
+        
         public CacheValue<T> Get<T>(string cacheKey)
         {
             var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(Get), new[] { cacheKey }));

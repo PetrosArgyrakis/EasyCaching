@@ -48,6 +48,12 @@
             return new CacheValue<T>(default(T), true);
         }
 
+        public CacheValue<T> Get<T>(string cacheKey, Func<T> dataRetriever,
+            Func<T, (bool, TimeSpan)> conditionalExpiration)
+        {
+            return new CacheValue<T>(default(T), true);
+        }
+
         public CacheValue<T> Get<T>(string cacheKey)
         {
             return new CacheValue<T>(default(T), true);

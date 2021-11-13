@@ -614,6 +614,11 @@
             return CacheValue<T>.NoValue;
         }
 
+        public CacheValue<T> Get<T>(string cacheKey, Func<T> dataRetriever, Func<T, (bool, TimeSpan)> conditionalExpiration)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Gets the specified cacheKey, dataRetriever and expiration async.
         /// </summary>

@@ -183,6 +183,11 @@ namespace EasyCaching.Redis
             }
         }
 
+        public override CacheValue<T> BaseGet<T>(string cacheKey, Func<T> dataRetriever, Func<T, (bool, TimeSpan)> func)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Get the specified cacheKey.
         /// </summary>
